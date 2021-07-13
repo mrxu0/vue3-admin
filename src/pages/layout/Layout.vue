@@ -79,7 +79,7 @@
     >
         <LayoutSider :trigger="null" collapsible>
             <div class="logo"></div>
-            <Menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
+            <Menu theme="dark" mode="inline" v-model:openKeys="openKeys" v-model:selectedKeys="selectedKeys">
                 <MyMenuItem></MyMenuItem>
             </Menu>
         </LayoutSider>
@@ -104,6 +104,7 @@ import MyMenuItem from './components/MenuItem';
 const router = useRouter();
 const route = useRoute();
 
+/** 通过 path 寻找菜单要展开的 key */
 const findOpenKeys = (menus: MenuType[], path: string): string[] => {
   for (let i = 0; i < menus.length; i++) {
     const item = menus[i];
@@ -122,7 +123,7 @@ const findOpenKeys = (menus: MenuType[], path: string): string[] => {
 const selectedKeys = ref([route.path]);
 const openKeys = ref(findOpenKeys(menusAdmin, route.path));
 const collapsed = ref(false);
-const size = ref(1600);
+const size = ref(window.innerWidth);
 
 const users = computed(() => store.state.users);
 
@@ -135,6 +136,10 @@ const screen = computed(() => {
   return 'ipad';
 });
 
+/** 处理缩小菜单模式，默认弹出的问题 */
+if (screen.value === 'ipad') {
+  openKeys.value = [];
+}
 /** 处理伸缩框只有在 PC 屏幕下才能够伸缩 */
 const dealCollapsed = computed({
   get() {

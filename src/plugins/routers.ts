@@ -1,7 +1,22 @@
 import { menusAdmin } from '@/utils/menu';
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import store from './store';
 
+const newMenus:RouteRecordRaw[] = [];
+const children = (menus: typeof menusAdmin) => {
+  menus.forEach((item) => {
+    if (item.children) {
+      children(item.children as typeof menusAdmin);
+    } else {
+      newMenus.push({
+        path: item.path,
+        name: item.file,
+        component: () => import(`../pages/${item.folder}/${item.file}.vue`),
+      });
+    }
+  });
+};
+children(menusAdmin);
 const routers = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -9,11 +24,11 @@ const routers = createRouter({
     {
       path: '/admin',
       component: () => import('@p/layout/Layout.vue'),
-      children: menusAdmin.map((item) => ({
-        path: item.path,
-        name: item.file,
-        component: () => import(`../pages/${item.folder}/${item.file}.vue`),
-      })),
+      children: newMenus,
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/login',
     },
   ],
 });
@@ -26,8 +41,9 @@ routers.beforeEach((to, from, next) => {
         redirect: to.fullPath,
       },
     });
+  } else {
+    next();
   }
-  next();
 });
 
 export default routers;

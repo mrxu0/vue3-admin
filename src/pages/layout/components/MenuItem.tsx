@@ -1,18 +1,32 @@
 import { defineComponent } from "vue";
-import { MenuItem } from "ant-design-vue";
-import { menusAdmin } from "@/utils/menu";
+import { MenuItem, SubMenu } from "ant-design-vue";
+import { menusAdmin, Menu } from "@/utils/menu";
 
 export default defineComponent({
+
     setup() {
-        return () => (
+        const recursiveMenus = (menus: Menu[]) => (
             <>
-            {menusAdmin.map(item => (
-                <MenuItem key={item.file}>
-                    <item.icon></item.icon>
-                    <span>{item.name}</span>
-                </MenuItem>
-            ))}
+                {menus.map(item => {
+                    if (item.children) {
+                        return (
+                            <SubMenu key={'/admin/' + item.path} icon={
+                                item.icon ? <item.icon></item.icon> : ''
+                            } title={item.name} >
+                                {recursiveMenus(item.children)}
+                            </SubMenu>
+                        )
+                    } else {
+                        return (
+                            <MenuItem key={'/admin/' + item.path}>
+                                {item.icon ? <item.icon></item.icon> : ''}
+                                <span>{item.name}</span>
+                            </MenuItem>
+                        )
+                    }
+                })}
             </>
         )
+        return () => recursiveMenus(menusAdmin)
     }
 })

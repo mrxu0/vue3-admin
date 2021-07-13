@@ -1,8 +1,19 @@
 <template>
     <Layout style="min-height: 100vh;">
-        <LayoutSider v-model:collapsed="collapsed" :trigger="null" collapsible>
+        <LayoutSider
+            v-if="screen !== 'iphone'"
+            v-model:collapsed="dealCollapsed"
+            :trigger="null"
+            collapsible
+        >
             <div class="logo"></div>
-            <Menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
+            <Menu
+                theme="dark"
+                :mode="screen === 'ipad' ? 'vertical' : 'inline'"
+                @click="menuClick"
+                v-model:selectedKeys="selectedKeys"
+                v-model:openKeys="openKeys"
+            >
                 <MyMenuItem></MyMenuItem>
             </Menu>
         </LayoutSider>
@@ -16,12 +27,21 @@
                 height: 48px;
                 line-height: 48px;"
             >
-                <MenuUnfoldOutlined
-                    v-if="collapsed"
-                    class="trigger"
-                    @click="() => (collapsed = !collapsed)"
-                />
-                <MenuFoldOutlined v-else class="trigger" @click="() => (collapsed = !collapsed)" />
+                <template v-if="screen !== 'ipad'">
+                    <MenuUnfoldOutlined
+                        v-if="collapsed"
+                        class="trigger"
+                        @click="() => (collapsed = !collapsed)"
+                    />
+                    <MenuFoldOutlined
+                        v-else
+                        class="trigger"
+                        @click="() => (collapsed = !collapsed)"
+                    />
+                </template>
+                <template v-else>
+                    <span></span>
+                </template>
                 <Dropdown>
                     <div style="display: inline;">
                         <Avatar size="small">
@@ -47,28 +67,113 @@
             >
                 <router-view></router-view>
             </LayoutContent>
-            <LayoutFooter style="text-align: center;">
-                Ant Design ©2018 Created by Ant UED
-            </LayoutFooter>
+            <LayoutFooter style="text-align: center;">Ant Design ©2018 Created by Ant UED</LayoutFooter>
         </Layout>
     </Layout>
+    <Drawer
+        v-model:visible="dealVisible"
+        placement="left"
+        :closable="false"
+        width="200px"
+        class="layout-drawer"
+    >
+        <LayoutSider :trigger="null" collapsible>
+            <div class="logo"></div>
+            <Menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
+                <MyMenuItem></MyMenuItem>
+            </Menu>
+        </LayoutSider>
+    </Drawer>
 </template>
 
 <script setup lang="ts">
 import {
   Menu, MenuItem, Layout, LayoutSider, LayoutHeader, LayoutContent, LayoutFooter, Dropdown, Avatar,
+  Drawer,
 } from 'ant-design-vue';
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons-vue';
-import { computed, onMounted, ref } from 'vue';
+import {
+  computed, onMounted, ref, watch,
+} from 'vue';
 import store from '@/plugins/store';
+import { useRoute, useRouter } from 'vue-router';
+import { menusAdmin } from '@/utils/menu';
+import type { Menu as MenuType } from '@/utils/menu';
 import MyMenuItem from './components/MenuItem';
 
-const selectedKeys = ref(['Workplace']);
-const collapsed = ref(false);
-const users = computed(() => store.state.users);
-</script>
+const router = useRouter();
+const route = useRoute();
 
-<style lang="less">
+const findOpenKeys = (menus: MenuType[], path: string): string[] => {
+  for (let i = 0; i < menus.length; i++) {
+    const item = menus[i];
+    if (item.children) {
+      const target = findOpenKeys(item.children, path);
+      if (target && target.length) {
+        target.push(`/admin/${item.path}`);
+        return target;
+      }
+    } else if (`/admin/${item.path}` === route.path) {
+      return [`/admin/${item.path}`];
+    }
+  }
+  return [];
+};
+const selectedKeys = ref([route.path]);
+const openKeys = ref(findOpenKeys(menusAdmin, route.path));
+const collapsed = ref(false);
+const size = ref(1600);
+
+const users = computed(() => store.state.users);
+
+const screen = computed(() => {
+  if (size.value > 1200) {
+    return 'pc';
+  } if (size.value < 600) {
+    return 'iphone';
+  }
+  return 'ipad';
+});
+
+/** 处理伸缩框只有在 PC 屏幕下才能够伸缩 */
+const dealCollapsed = computed({
+  get() {
+    return !(!collapsed.value && screen.value === 'pc');
+  },
+  set(val: boolean) {
+    collapsed.value = val;
+  },
+});
+
+/** 手机屏幕下才会有浮层菜单 */
+const dealVisible = computed({
+  get() {
+    return collapsed.value && screen.value === 'iphone';
+  },
+  set(val: boolean) {
+    collapsed.value = val;
+  },
+});
+
+const menuClick = ({ item, key, keyPath }: Antdv.MenuClick) => {
+  router.push(key);
+};
+
+onMounted(() => {
+  window.addEventListener('resize', (e: any) => {
+    size.value = e.currentTarget.innerWidth;
+  });
+});
+</script>
+<style>
+.layout-drawer .ant-drawer-body {
+    padding: 0 !important;
+}
+.layout-drawer .ant-drawer-wrapper-body {
+    background: #001529;
+}
+</style>
+<style scoped lang="less">
 .trigger {
     font-size: 18px;
     line-height: 48px;

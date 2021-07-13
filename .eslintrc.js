@@ -23,5 +23,12 @@ module.exports = {
     'import/extensions': ['off'],
     'no-param-reassign': ['off'],
     'import/prefer-default-export': ['off'],
+    'import/no-extraneous-dependencies': ['off'],
+    'max-len': ['off'],
+    'no-plusplus': ['off'],
+    // 'no-undef': ['off'],
+  },
+  globals: {
+    Antdv: 'readonly',
   },
 };

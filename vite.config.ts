@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import ViteComponents, {
   AntDesignVueResolver,
 } from 'vite-plugin-components';
@@ -16,7 +16,7 @@ export default defineConfig({
       globalComponentsDeclaration: true,
       customComponentResolvers: [
         AntDesignVueResolver(),
-      ]
+      ],
     }),
   ],
   resolve: {
@@ -24,7 +24,7 @@ export default defineConfig({
       '@p': '/src/pages',
       '@a': '/src/assets',
       '@c': '/src/components',
-      '@': '/src'
-    }
-  }
-})
+      '@': '/src',
+    },
+  },
+});

@@ -2,10 +2,10 @@
     <div class="container">
         <div class="main">
             <Tabs v-model:activeKey="activeKey">
-                <TabPane tab="账号密码登陆" :key="1">
+                <TabPane :tab="$t('login.账号密码登陆')" :key="1">
                     <Form :model="formState" :rules="rules" @finish="onSubmit" ref="formRef">
                         <FormItem name="name">
-                            <Input v-model:value="formState.name" placeholder="账户：admin">
+                            <Input v-model:value="formState.name" :placeholder="$t('login.账户：admin')">
                                 <template #prefix>
                                     <UserOutlined style="color: #1890ff" />
                                 </template>
@@ -15,7 +15,7 @@
                             <Input
                                 v-model:value="formState.password"
                                 type="password"
-                                placeholder="密码：admin or metaapp"
+                                :placeholder="$t('login.密码：admin or metaapp')"
                             >
                                 <template #prefix>
                                     <LockOutlined style="color: #1890ff" />
@@ -28,16 +28,16 @@
                         </FormItem>
                         <FormItem name="auto">
                             <div style="display: flex; justify-content: space-between;">
-                                <Checkbox v-model:checked="formState.auto">自动登录</Checkbox>
-                                <Button type="link">忘记密码</Button>
+                                <Checkbox v-model:checked="formState.auto">{{ $t('login.自动登录') }}</Checkbox>
+                                <Button type="link">{{ $t('login.忘记密码') }}</Button>
                             </div>
                         </FormItem>
                         <FormItem>
-                            <Button type="primary" html-type="submit" block>确定</Button>
+                            <Button type="primary" html-type="submit" block>{{ $t('login.确定') }}</Button>
                         </FormItem>
                     </Form>
                 </TabPane>
-                <TabPane tab="手机号登陆" :key="2"></TabPane>
+                <TabPane :tab="$t('login.手机号登陆')" :key="2"></TabPane>
             </Tabs>
         </div>
     </div>
@@ -54,6 +54,9 @@ import type { UnwrapRef } from 'vue';
 import { reactive, ref, toRaw } from 'vue';
 import routers from '@/plugins/routers';
 import store from '@/plugins/store';
+import { useI18n } from 'vue-i18n';
+
+const i18n = useI18n();
 
 interface FormState {
     name: string;
@@ -71,10 +74,10 @@ const formState: UnwrapRef<FormState> = reactive({
 
 const rules = {
   name: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { required: true, message: i18n.t('login.请输入用户名'), trigger: 'blur' },
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
+    { required: true, message: i18n.t('login.请输入密码'), trigger: 'blur' },
   ],
 };
 
@@ -83,7 +86,7 @@ const onSubmit = (values: FormState) => {
     store.commit('changeUsers', values);
     routers.push('/admin/workplace');
   } else {
-    message.error('账号或密码输入不正确');
+    message.error(i18n.t('login.账号或密码输入不正确'));
   }
 };
 </script>

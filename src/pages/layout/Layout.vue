@@ -52,14 +52,14 @@
               <Menu>
                 <MenuItem key="person">
                   <span>
-                    <UserOutlined style="margin-right: 4px;" />个人中心
+                    <UserOutlined style="margin-right: 4px;" />{{$t('layout.个人中心')}}
                   </span>
                 </MenuItem>
               </Menu>
             </template>
           </Dropdown>
           <Dropdown>
-            <div style="display: inline;">
+            <div style="display: inline; margin-left: 20px;">
               <GlobalOutlined />
             </div>
             <template #overlay>
@@ -119,12 +119,10 @@ import store from '@/plugins/store';
 import { useRoute, useRouter } from 'vue-router';
 import { menusAdmin } from '@/utils/menu';
 import type { Menu as MenuType } from '@/utils/menu';
-import { useI18n } from 'vue-i18n';
 import MyMenuItem from './components/MenuItem';
 
 const router = useRouter();
 const route = useRoute();
-const i18n = useI18n();
 
 /** 通过 path 寻找菜单要展开的 key */
 const findOpenKeys = (menus: MenuType[], path: string): string[] => {

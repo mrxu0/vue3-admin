@@ -18,4 +18,7 @@ export default {
     '递归-2': 'Recursive-2',
     '递归-3': 'Recursive-3',
   },
+  echarts: {
+    图表: 'echart',
+  },
 };

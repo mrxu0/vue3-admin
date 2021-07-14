@@ -23,6 +23,9 @@ export const menusAdmin: Menu[] = [
     folder: 'richText', file: 'RichText', path: 'rich-text', icon: FormOutlined, name: i18n.global.t('global.富文本'),
   },
   {
+    folder: 'echarts', file: 'Echarts', path: 'echarts', icon: FormOutlined, name: i18n.global.t('echarts.图表'),
+  },
+  {
     path: 'digui',
     name: i18n.global.t('global.递归路由'),
     icon: VerticalAlignMiddleOutlined,
